@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ユーザーメニュー</title>
+  </head>
+  <body>
+    <button>みんなのToDoを見に行く</button>
+    <form
+      role="form"
+      th:action="@{/users/__${user}__/todos}"
+      th:object="${ToDoForm}"
+      method="post"
+    >
+      <h2>ToDo登録フォーム</h2>
+      <p>
+        <label>Title: </label>
+        <p>
+          <input type="text" required th:name="title" />
+          <span th:if="${#fields.hasErrors('title')}" th:errors="*{title}" style="color: red"></span>
+        </p>
+        <p><input type="submit" value="登録"/></p>
+      </p>
+    </form>
+
+    <div>
+      <label>ToDoリスト</label>
+      <table border="1">
+        <tr>
+          <th>タスク</th>
+          <th></th>
+        </tr>
+        <tr th:each="task: ${toDoList}">
+          <td>[[${task.title}]]</td>
+          <td>
+            <form
+              role="form"
+              th:action="@{/users/__${user}__/complete/__${task.seq}__}"
+              th:object="${ToDo}"
+              method="post"
+              >
+              <input type="submit" value="完了">
+            </form>
+          </td>
+          <td>
+            <form
+              role="form"
+              th:action="@{/users/__${user}__/delete/__${task.seq}__}"
+              th:object="${ToDo}"
+              method="post"
+            >
+              <input type="submit" value="削除">
+            </form>
+          </td>
+        </tr>
+      </table>
+
+      <label>Doneリスト</label>
+      <table border="1">
+        <tr>
+          <th>タスク</th>
+          <th></th>
+        </tr>
+        <tr th:each="task: ${doneList}">
+          <td>[[${task.title}]]</td>
+          <td>
+            <form
+              role="form"
+              th:action="@{/users/__${user}__/delete/__${task.seq}__}"
+              th:object="${ToDo}"
+              method="post"
+            >
+              <input type="submit" value="削除">
+            </form>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

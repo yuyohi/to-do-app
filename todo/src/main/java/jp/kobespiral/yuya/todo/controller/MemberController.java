@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,10 +30,9 @@ public class MemberController {
      * @return
      */
     @GetMapping("/register")
-    String showUserForm(Model model) {
+    String showUserForm(@ModelAttribute MemberForm form, Model model) {
         List<Member> members = memberService.getAllMembers();
         model.addAttribute("members", members);
-        MemberForm form = new MemberForm();
         model.addAttribute("MemberForm", form);
 
         return "register";
@@ -58,7 +59,12 @@ public class MemberController {
      * @return
      */
     @PostMapping("/register")
-    String createUser(@ModelAttribute(name = "MemberForm") MemberForm form, Model model) {
+    String createUser(@Validated @ModelAttribute(name = "MemberForm") MemberForm form, BindingResult bindingResult,
+            Model model) {
+        if (bindingResult.hasErrors()) {
+            return showUserForm(form, model);
+        }
+
         Member member = memberService.createMember(form);
         model.addAttribute("MemberForm", member);
         return "registered";
@@ -67,13 +73,13 @@ public class MemberController {
     /**
      * 管理者用・ユーザ削除処理 HTTP-GET /admin/delete/{mid}
      * 
-     * @param memberId
+     * @param mid
      * @param model
      * @return
      */
     @GetMapping("/delete/{mid}")
-    String deleteUser(@PathVariable String memberId, Model model) {
-        memberService.deleteMember(memberId);
-        return showUserForm(model);
+    String deleteUser(@PathVariable String mid, Model model) {
+        memberService.deleteMember(mid);
+        return "redirect:/admin/register";
     }
 }

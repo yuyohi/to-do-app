@@ -1,4 +1,4 @@
-package jp.kobespiral.yuya.todo.entity;//適宜変えること
+package jp.kobespiral.yuya.todo.entity;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import lombok.AllArgsConstructor;

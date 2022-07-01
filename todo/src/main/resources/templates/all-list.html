@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>みんなのToDOリスト</title>
+  </head>
+  <body>
+    <div>
+      <label>みんなのToDoリスト</label>
+      <table border="1">
+        <tr>
+          <th>タスク</th>
+          <th></th>
+        </tr>
+        <tr th:each="task: ${AllToDoList}">
+          <td>[[${task.title}]]</td>
+          </td>
+        </tr>
+      </table>
+
+      <label>Doneリスト</label>
+      <table border="1">
+        <tr>
+          <th>タスク</th>
+          <th></th>
+        </tr>
+        <tr th:each="task: ${AllDoneList}">
+          <td>[[${task.title}]]</td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

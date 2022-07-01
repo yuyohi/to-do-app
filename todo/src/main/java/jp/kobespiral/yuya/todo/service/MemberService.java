@@ -59,4 +59,8 @@ public class MemberService {
         Member m = getMember(mid);
         mRepo.delete(m);
     }
+
+    public boolean checkExistById(String mid) {
+        return mRepo.existsById(mid);
+    }
 }
