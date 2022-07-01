@@ -60,6 +60,7 @@ public class ToDoService {
     public void doToDo(Long seq) {
         ToDo toDo = getToDo(seq);
         toDo.setDone(true);
+        toDo.setDoneAt(new Date());
         toDoRepo.save(toDo);
     }
 }

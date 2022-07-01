@@ -13,4 +13,6 @@ public class Member {
     @Id
     String mid;   //メンバーID
     String name;  //氏名
+    String password;
+    String role;
 }

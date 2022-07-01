@@ -4,16 +4,26 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import jp.kobespiral.yuya.todo.dto.MemberForm;
+import jp.kobespiral.yuya.todo.dto.UserDetailsImpl;
 import jp.kobespiral.yuya.todo.entity.Member;
 import jp.kobespiral.yuya.todo.exception.ToDoAppException;
 import jp.kobespiral.yuya.todo.repository.MemberRepository;
 
+/**
+ * メンバーのCRUDを行うサービス
+ */
 @Service
-public class MemberService {
+public class MemberService implements UserDetailsService {
     @Autowired
     MemberRepository mRepo;
+    @Autowired
+    BCryptPasswordEncoder encoder;
 
     /**
      * メンバーを作成する (C)
@@ -27,7 +37,9 @@ public class MemberService {
         if (mRepo.existsById(mid)) {
             throw new ToDoAppException(ToDoAppException.MEMBER_ALREADY_EXISTS, mid + ": Member already exists");
         }
+
         Member m = form.toEntity();
+        m.setPassword(encoder.encode(m.getPassword())); // エンコードしてセーブする
         return mRepo.save(m);
     }
 
@@ -52,6 +64,10 @@ public class MemberService {
         return mRepo.findAll();
     }
 
+    public boolean existById(String mid) {
+        return mRepo.existsById(mid);
+    }
+
     /**
      * メンバーを削除する (D)
      */
@@ -60,7 +76,28 @@ public class MemberService {
         mRepo.delete(m);
     }
 
-    public boolean checkExistById(String mid) {
-        return mRepo.existsById(mid);
+    /* ------------------ ここから追加分 --------------------------- */
+    /**
+     * Spring Securityのメソッド．ユーザIDを与えて，ユーザ詳細を生成する
+     */
+    @Override
+    public UserDetails loadUserByUsername(String mid) throws UsernameNotFoundException {
+        Member m = mRepo.findById(mid).orElseThrow(
+                () -> new UsernameNotFoundException(mid + ": no such user exists"));
+        return new UserDetailsImpl(m);
     }
+
+    /**
+     * 管理者を登録するサービス．
+     */
+    public Member registerAdmin(String adminPassword) {
+        Member m = new Member();
+        m.setMid("admin");
+        m.setName("System Administrator");
+        m.setPassword(encoder.encode(adminPassword));
+        m.setRole("ADMIN");
+        System.out.println(m);
+        return mRepo.save(m);
+    }
+
 }

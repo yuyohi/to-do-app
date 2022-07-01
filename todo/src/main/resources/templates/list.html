@@ -2,81 +2,71 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ユーザーメニュー</title>
+    <title>ToDoList</title>
   </head>
+
   <body>
-    <button>みんなのToDoを見に行く</button>
-    <form
-      role="form"
-      th:action="@{/users/__${user}__/todos}"
-      th:object="${ToDoForm}"
-      method="post"
-    >
-      <h2>ToDo登録フォーム</h2>
-      <p>
-        <label>Title: </label>
-        <p>
-          <input type="text" required th:name="title" />
-          <span th:if="${#fields.hasErrors('title')}" th:errors="*{title}" style="color: red"></span>
-        </p>
-        <p><input type="submit" value="登録"/></p>
-      </p>
-    </form>
+    <h1>ようこそ [[${member.name}]] さん！</h1>
+    <p>
+      <a th:href="@{/{mid}/todos/all(mid=${member.mid})}">みんなのToDo</a>
+      <form th:action="@{/sign-out}" method="post">
+        <input type="submit" value="サインアウト" />
+      </form>
+    </p>
+    <h2>ToDo</h2>
+    <table border="1">
+      <tr>
+        <th>#</th>
+        <th>タイトル</th>
+        <th>作成日時</th>
+        <th>コマンド</th>
+      </tr>
+      <tr th:each="todo: ${toDoList}">
+        <td>[[${todo.seq}]]</td>
+        <td>[[${todo.title}]]</td>
+        <td>[[${todo.createdAt}]]</td>
+        <td>
+          <a
+            th:href="@{/users/{mid}/complete/{seq}(mid=${member.mid},seq=${todo.seq})}"
+            >完了</a
+          >
+        </td>
+      </tr>
+      <tr>
+        <td>*</td>
+        <td colspan="3">
+          <form
+            role="form"
+            th:action="@{{mid}/todos(mid=${member.mid})}"
+            th:object="${ToDoForm}"
+            method="post"
+          >
+            <input type="text" required th:field="*{title}" />
+            <input type="submit" value="新規作成" />
+            <div
+              th:if="${#fields.hasErrors('title')}"
+              th:errors="*{title}"
+              style="color: red"
+            ></div>
+          </form>
+        </td>
+      </tr>
+    </table>
 
-    <div>
-      <label>ToDoリスト</label>
-      <table border="1">
-        <tr>
-          <th>タスク</th>
-          <th></th>
-        </tr>
-        <tr th:each="task: ${toDoList}">
-          <td>[[${task.title}]]</td>
-          <td>
-            <form
-              role="form"
-              th:action="@{/users/__${user}__/complete/__${task.seq}__}"
-              th:object="${ToDo}"
-              method="post"
-              >
-              <input type="submit" value="完了">
-            </form>
-          </td>
-          <td>
-            <form
-              role="form"
-              th:action="@{/users/__${user}__/delete/__${task.seq}__}"
-              th:object="${ToDo}"
-              method="post"
-            >
-              <input type="submit" value="削除">
-            </form>
-          </td>
-        </tr>
-      </table>
-
-      <label>Doneリスト</label>
-      <table border="1">
-        <tr>
-          <th>タスク</th>
-          <th></th>
-        </tr>
-        <tr th:each="task: ${doneList}">
-          <td>[[${task.title}]]</td>
-          <td>
-            <form
-              role="form"
-              th:action="@{/users/__${user}__/delete/__${task.seq}__}"
-              th:object="${ToDo}"
-              method="post"
-            >
-              <input type="submit" value="削除">
-            </form>
-          </td>
-        </tr>
-      </table>
-    </div>
+    <h2>Done</h2>
+    <table border="1">
+      <tr>
+        <th>#</th>
+        <th>タイトル</th>
+        <th>作成日時</th>
+        <th>完了日時</th>
+      </tr>
+      <tr th:each="done: ${doneList}">
+        <td>[[${done.seq}]]</td>
+        <td>[[${done.title}]]</td>
+        <td>[[${done.createdAt}]]</td>
+        <td>[[${done.doneAt}]]</td>
+      </tr>
+    </table>
   </body>
 </html>

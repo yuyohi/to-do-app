@@ -6,16 +6,21 @@ import javax.validation.constraints.Size;
 
 import jp.kobespiral.yuya.todo.entity.Member;
 import lombok.Data;
+
 @Data
 public class MemberForm {
-    @Pattern(regexp ="[a-z0-9_\\-]{4,16}")
-    String mid; //メンバーID．
+    @Pattern(regexp = "[a-z0-9_\\-]{4,16}")
+    String mid; // メンバーID．
     @NotBlank
     @Size(min = 1, max = 32)
-    String name; //名前
+    String name; // 名前
+    @NotBlank
+    @Size(min = 3)
+    String password;
+    String role = "MEMBER";
 
     public Member toEntity() {
-        Member m = new Member(mid, name);
+        Member m = new Member(mid, name, password, role);
         return m;
     }
 }
